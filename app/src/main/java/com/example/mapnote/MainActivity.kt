@@ -94,7 +94,7 @@ MapView.MapViewEventListener {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
                         startActivity(intent)
                     }
-                    builder.setNegativeButton("취소") {//
+                    builder.setNegativeButton("취소") {
                             dialog, which ->
                     }
                     builder.show()
