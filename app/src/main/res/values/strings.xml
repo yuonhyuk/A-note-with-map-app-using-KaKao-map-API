@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MAP NOTE</string>
+    <string name="api_nmapview">안드로이드 카카오맵 API 활용 : \nMapView 띄우기</string>
+</resources>
