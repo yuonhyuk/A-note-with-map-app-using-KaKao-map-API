@@ -78,8 +78,8 @@ MapView.MapViewEventListener {
                     ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
                 }
-                builder.setNegativeButton("취소") { dialog, which ->
-
+                builder.setNegativeButton("취소") {
+                        dialog, which ->
                 }
                 builder.show()
             } else {
