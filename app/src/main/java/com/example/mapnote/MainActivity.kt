@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -30,7 +31,7 @@ MapView.MapViewEventListener {
         val view = binding.root
         setContentView(view)
 
-        binding.mapView.setMapViewEventListener(this);
+        binding.mapView.setMapViewEventListener(this)
 
         if (checkLocationService()) {
             permissionCheck()
@@ -56,8 +57,7 @@ MapView.MapViewEventListener {
         binding.zoomin.setOnClickListener(){
             binding.mapView.zoomOut(true)
         }
-        binding.mapView.zoomIn(true)
-        binding.mapView.zoomOut(true)
+        //binding.mapView.zoomOut(true)
     }
     // GPS가 켜져있는지 확인
     private fun checkLocationService(): Boolean {
@@ -150,9 +150,17 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
+        binding.mapView.removeAllPOIItems()
+        val marker = MapPOIItem()
+        marker.itemName = ""
+        marker.mapPoint = p1
+        marker.markerType = MapPOIItem.MarkerType.YellowPin
+        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+        binding.mapView.addPOIItem(marker)
     }
 
     override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {
+        binding.mapView.zoomIn(true)
     }
 
     override fun onMapViewLongPressed(p0: MapView?, p1: MapPoint?) {
