@@ -22,7 +22,7 @@ import net.daum.mf.map.api.MapView
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
-    private val ACCESS_FINE_LOCATION = 1000
+    private val ACCESS_FINE_LOCATION = 1000 //workgin master
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
