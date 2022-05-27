@@ -31,6 +31,7 @@ MapView.MapViewEventListener {
         setContentView(view)
 
         binding.mapView.setMapViewEventListener(this)
+        binding.mapView.setPOIItemEventListener(this)
 
         if (checkLocationService()) {
             permissionCheck()
