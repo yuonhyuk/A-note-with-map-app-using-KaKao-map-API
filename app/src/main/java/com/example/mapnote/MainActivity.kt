@@ -145,13 +145,6 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
-        binding.mapView.removeAllPOIItems()
-        val marker = MapPOIItem()
-        marker.itemName = "클릭해서 정보 입력"
-        marker.mapPoint = p1
-        marker.markerType = MapPOIItem.MarkerType.YellowPin
-        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
-        binding.mapView.addPOIItem(marker)
     }
 
     override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {
@@ -159,6 +152,14 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewLongPressed(p0: MapView?, p1: MapPoint?) {
+        binding.mapView.removeAllPOIItems()
+        val marker = MapPOIItem()
+        marker.itemName = "클릭해서 정보 입력"
+        marker.mapPoint = p1
+        marker.markerType = MapPOIItem.MarkerType.YellowPin
+        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+        marker.showAnimationType = MapPOIItem.ShowAnimationType.DropFromHeaven
+        binding.mapView.addPOIItem(marker)
     }
 
     override fun onMapViewDragStarted(p0: MapView?, p1: MapPoint?) {
