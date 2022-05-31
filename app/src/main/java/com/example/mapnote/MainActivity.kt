@@ -64,6 +64,7 @@ MapView.MapViewEventListener {
             binding.mapView.zoomOut(true)
         }
     }
+    //말풍선 레이아웃
     class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
         val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
         val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
@@ -82,15 +83,12 @@ MapView.MapViewEventListener {
             return mCalloutBalloon
         }
     }
-
+    //말풍선 클릭시 동작 정의 이벤트 리스너
     class MarkerEventListener(val context: Context): MapView.POIItemEventListener {
         override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
-            // 마커 클릭 시
         }
 
         override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?) {
-            // 말풍선 클릭 시 (Deprecated)
-            // 이 함수도 작동하지만 그냥 아래 있는 함수에 작성하자
         }
 
         override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?, buttonType: MapPOIItem.CalloutBalloonButtonType?) {
@@ -116,7 +114,7 @@ MapView.MapViewEventListener {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
-
+    // 앱 위치 권한 확인
     private fun permissionCheck() {
         val preference = getPreferences(MODE_PRIVATE)
         val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
@@ -131,7 +129,6 @@ MapView.MapViewEventListener {
                         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
                 }
                 builder.setNegativeButton("취소") { dialog, which ->
-
                 }
                 builder.show()
             } else {
@@ -164,14 +161,14 @@ MapView.MapViewEventListener {
         if (requestCode == ACCESS_FINE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "위치 권한이 승인되었습니다", Toast.LENGTH_SHORT).show()
-                //startTracking()
+                startTracking()
             } else {
                 Toast.makeText(this, "위치 권한이 거절되었습니다", Toast.LENGTH_SHORT).show()
                 permissionCheck()
             }
         }
     }
-
+    // 현재 위치 트래킹
     private fun startTracking() {
         binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
     }
