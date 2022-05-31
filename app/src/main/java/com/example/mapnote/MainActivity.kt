@@ -98,7 +98,20 @@ MapView.MapViewEventListener {
             builder.setTitle("마커 설정")
             builder.setItems(itemList) { dialog, which ->
                 when(which) {
-                    0 -> Toast.makeText(context, "", Toast.LENGTH_SHORT).show()  // 토스트
+                    0 -> {
+                        /*val dlg = LayoutInflater.from(context).inflate(R.layout.input_information_dialog, null)
+                        val mBuilder = AlertDialog.Builder(context)
+                            .setView(dlg)
+                        mBuilder.show()
+                        */
+                        var dlg = InfoDialog(context)
+                        dlg.show()
+                        dlg.setOnClickedListner(object : InfoDialog.BtnOnClickListner{
+                            override fun onClicked(localname: String,memotext: String,deadTime: String){
+                                poiItem?.itemName = localname
+                            }
+                        })
+                    }
                     1 -> mapView?.removePOIItem(poiItem)    // 마커 삭제
                     2 -> dialog.dismiss()   // 대화상자 닫기
                 }
