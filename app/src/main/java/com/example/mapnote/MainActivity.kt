@@ -26,6 +26,7 @@ import net.daum.mf.map.api.MapView
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
+    private val eventListener = MarkerEventListener(this)
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ MapView.MapViewEventListener {
         binding.mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
 
         binding.mapView.setMapViewEventListener(this)
-        binding.mapView.setPOIItemEventListener(this)
+        binding.mapView.setPOIItemEventListener(eventListener)
         if (checkLocationService()) {
             permissionCheck()
         }
@@ -63,11 +64,6 @@ MapView.MapViewEventListener {
             binding.mapView.zoomOut(true)
         }
     }
-    // GPS가 켜져있는지 확인
-    private fun checkLocationService(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
     class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
         val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
         val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
@@ -86,6 +82,43 @@ MapView.MapViewEventListener {
             return mCalloutBalloon
         }
     }
+
+    class MarkerEventListener(val context: Context): MapView.POIItemEventListener {
+        override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
+            // 마커 클릭 시
+        }
+
+        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?) {
+            // 말풍선 클릭 시 (Deprecated)
+            // 이 함수도 작동하지만 그냥 아래 있는 함수에 작성하자
+        }
+
+        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?, buttonType: MapPOIItem.CalloutBalloonButtonType?) {
+            // 말풍선 클릭 시
+            val builder = AlertDialog.Builder(context)
+            val itemList = arrayOf("해당 마커 정보 입력", "마커 삭제", "취소")
+            builder.setTitle("마커 설정")
+            builder.setItems(itemList) { dialog, which ->
+                when(which) {
+                    0 -> Toast.makeText(context, "", Toast.LENGTH_SHORT).show()  // 토스트
+                    1 -> mapView?.removePOIItem(poiItem)    // 마커 삭제
+                    2 -> dialog.dismiss()   // 대화상자 닫기
+                }
+            }
+            builder.show()
+        }
+
+        override fun onDraggablePOIItemMoved(mapView: MapView?, poiItem: MapPOIItem?, mapPoint: MapPoint?) {
+            // 마커의 속성 중 isDraggable = true 일 때 마커를 이동시켰을 경우
+        }
+    }
+
+    // GPS가 켜져있는지 확인
+    private fun checkLocationService(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
     private fun permissionCheck() {
         val preference = getPreferences(MODE_PRIVATE)
         val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
