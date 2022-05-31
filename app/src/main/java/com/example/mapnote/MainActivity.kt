@@ -149,10 +149,7 @@ MapView.MapViewEventListener {
                     builder.show()
                 }
             }
-        } else {
-
         }
-
     }
 
     // 권한 요청
