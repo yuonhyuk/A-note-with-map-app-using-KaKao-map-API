@@ -8,12 +8,16 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mapnote.databinding.ActivityMainBinding
+import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
@@ -30,9 +34,10 @@ MapView.MapViewEventListener {
         val view = binding.root
         setContentView(view)
 
+        binding.mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
+
         binding.mapView.setMapViewEventListener(this)
         binding.mapView.setPOIItemEventListener(this)
-
         if (checkLocationService()) {
             permissionCheck()
         }
@@ -57,14 +62,30 @@ MapView.MapViewEventListener {
         binding.zoomin.setOnClickListener(){
             binding.mapView.zoomOut(true)
         }
-        //binding.mapView.zoomOut(true)
     }
     // GPS가 켜져있는지 확인
     private fun checkLocationService(): Boolean {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
+    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
+        val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
+        val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
+        val address: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_address)
 
+        override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 마커 클릭 시 나오는 말풍선
+            name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
+            address.text = "getCalloutBalloon"
+            return mCalloutBalloon
+        }
+
+        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 말풍선 클릭 시
+            address.text = "getPressedCalloutBalloon"
+            return mCalloutBalloon
+        }
+    }
     private fun permissionCheck() {
         val preference = getPreferences(MODE_PRIVATE)
         val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
@@ -149,7 +170,6 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {
-        binding.mapView.zoomIn(true)
     }
 
     override fun onMapViewLongPressed(p0: MapView?, p1: MapPoint?) {
