@@ -99,11 +99,6 @@ MapView.MapViewEventListener {
             builder.setItems(itemList) { dialog, which ->
                 when(which) {
                     0 -> {
-                        /*val dlg = LayoutInflater.from(context).inflate(R.layout.input_information_dialog, null)
-                        val mBuilder = AlertDialog.Builder(context)
-                            .setView(dlg)
-                        mBuilder.show()
-                        */
                         var dlg = InfoDialog(context)
                         dlg.show()
                         dlg.setOnClickedListner(object : InfoDialog.BtnOnClickListner{
