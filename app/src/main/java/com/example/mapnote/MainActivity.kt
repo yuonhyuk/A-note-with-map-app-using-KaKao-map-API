@@ -33,6 +33,7 @@ MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var db : MarkerDataBase
     var markerList = listOf<MarkerEntity>()
+    var anMarker = mutableListOf<Any>(4)
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +48,7 @@ MapView.MapViewEventListener {
         binding.mapView.setPOIItemEventListener(this)
 
         db = MarkerDataBase.getInstance((this))!!
+        getAllInfo()
 
         if (checkLocationService()) {
             permissionCheck()
@@ -163,7 +165,10 @@ MapView.MapViewEventListener {
     private fun getAnInfo(loc_name : String?){
         val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
-                markerList = db.markerDAO().getAn(loc_name)
+                anMarker.set(0,db.markerDAO().getAn(loc_name).place_name)
+                anMarker.set(1,db.markerDAO().getAn(loc_name).memo)
+                anMarker.set(2,db.markerDAO().getAn(loc_name).date)
+                anMarker.set(3,db.markerDAO().getAn(loc_name).time)
             }
             override fun onPostExecute(result: Unit?) {
                 super.onPostExecute(result)
@@ -209,20 +214,19 @@ MapView.MapViewEventListener {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     dlg.setView(dialogView)
-                    if(markerList.isEmpty()){
+
+                    if(anMarker.isEmpty()){
                         dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
                         dialogView.findViewById<TextView>(R.id.memocontent).text = ""
                         dialogView.findViewById<TextView>(R.id.deadline).text = ""
                     }
                     else{
-                        getAnInfo(p1?.itemName)
-                        dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                        dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[0].memo
-                        dialogView.findViewById<TextView>(R.id.deadline).text = markerList[0].time
+                        Toast.makeText(this, "$anMarker", Toast.LENGTH_SHORT).show()
+                        //dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                        //dialogView.findViewById<TextView>(R.id.memocontent).text = anMarker[1].toString()
+                        //dialogView.findViewById<TextView>(R.id.deaddate).text = anMarker[2].toString()
+                        //dialogView.findViewById<TextView>(R.id.deadline).text = anMarker[3].toString()
                     }
-
-                    for(i in markerList.indices)
-                        Toast.makeText(this, "$markerList[i]", Toast.LENGTH_SHORT).show()
                     dlg.setPositiveButton("확인",null)
                     dlg.show()
                 }

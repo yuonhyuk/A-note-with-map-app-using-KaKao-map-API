@@ -16,7 +16,7 @@ interface MarkerDAO {
     fun getAll() : List<MarkerEntity>
 
     @Query("SELECT * FROM markerInfo WHERE place_name LIKE :marker")
-    fun getAn(marker: String?) : List<MarkerEntity>
+    fun getAn(marker: String?) : MarkerEntity
 
     @Delete
     fun delete(marker_Info: MarkerEntity)
