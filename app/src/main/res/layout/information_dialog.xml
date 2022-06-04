@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="마감 시간 입력"
+            android:text="예정 시각"
             android:textColor="#9C27B0"
             android:textSize="23dp" />
 

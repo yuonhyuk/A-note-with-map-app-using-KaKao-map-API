@@ -50,12 +50,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="마감 시간 입력"
+            android:text="예정 시각 입력"
             android:textColor="#9C27B0"
             android:textSize="23dp" />
 
         <EditText
-            android:id="@+id/editTextTime"
+            android:id="@+id/edittexttime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"

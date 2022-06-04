@@ -135,7 +135,7 @@ MapView.MapViewEventListener {
     }
 
     private fun insertInfo(marker_Info: MarkerEntity){
-        val insertTask = (object : AsyncTask<Unit,Unit,Unit>(){
+        val insertTask = object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
                 db.markerDAO().insert(marker_Info)
             }
@@ -144,7 +144,8 @@ MapView.MapViewEventListener {
                 super.onPostExecute(result)
                 getAllInfo()
             }
-        }).execute()
+        }
+        insertTask.execute()
     }
 
     private fun getAllInfo(){
@@ -159,6 +160,17 @@ MapView.MapViewEventListener {
         }).execute()
     }
 
+    private fun getAnInfo(loc_name : String?){
+        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                markerList = db.markerDAO().getAn(loc_name)
+            }
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+
+            }
+        }).execute()
+    }
     private fun deleteInfo(){
     }
 
@@ -188,6 +200,7 @@ MapView.MapViewEventListener {
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
     }
 
+    @SuppressLint("CutPasteId")
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
         val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
@@ -198,10 +211,18 @@ MapView.MapViewEventListener {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     dlg.setView(dialogView)
+                    if(markerList.isEmpty()){
+                        dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                        dialogView.findViewById<TextView>(R.id.memocontent).text = ""
+                        dialogView.findViewById<TextView>(R.id.deadline).text = ""
+                    }
+                    else{
+                        getAnInfo(p1?.itemName)
+                        dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                        dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[0].memo
+                        dialogView.findViewById<TextView>(R.id.deadline).text = markerList[0].time
+                    }
 
-                    dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                    //db에 저장된 poiItem 메모정보 가져오기 dialogView.findViewById<TextView>(R.id.memocontent).text = p1?.메모
-                    //db에 저장된 poiItem 시간 가져오기 dialogView.findViewById<TextView>(R.id.memocontent).text = p1?.시간ㅇㅁ
                     dlg.setPositiveButton("확인",null)
                     dlg.show()
                 }
@@ -214,7 +235,7 @@ MapView.MapViewEventListener {
                         val loc = p1?.mapPoint
                         val itemname = dialogView.findViewById<EditText>(R.id.location_name).text.toString()
                         val memo = dialogView.findViewById<EditText>(R.id.memocontent).text.toString()
-                        val time = dialogView.findViewById<EditText>(R.id.editTextTime).text.toString()
+                        val time = dialogView.findViewById<EditText>(R.id.edittexttime).text.toString()
                         val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                         val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                         val marker = MapPOIItem()
@@ -223,7 +244,7 @@ MapView.MapViewEventListener {
                         p0?.removePOIItem(p1)
                         marker.itemName = itemname
                         marker.mapPoint = loc
-                        marker.markerType = MapPOIItem.MarkerType.BluePin
+                        marker.markerType = MapPOIItem.MarkerType.YellowPin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
                         insertInfo(marker_Info)
