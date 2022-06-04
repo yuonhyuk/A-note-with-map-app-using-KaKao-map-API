@@ -17,6 +17,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.mapnote.Room.MarkerDataBase
+import com.example.mapnote.Room.MarkerEntity
 import com.example.mapnote.databinding.ActivityMainBinding
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
@@ -27,6 +29,8 @@ import net.daum.mf.map.api.MapView
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
+    lateinit var db : MarkerDataBase
+    var markerList = listOf<MarkerEntity>()
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +43,8 @@ MapView.MapViewEventListener {
 
         binding.mapView.setMapViewEventListener(this)
         binding.mapView.setPOIItemEventListener(this)
+
+        db = MarkerDataBase.getInstance((this))!!
 
         if (checkLocationService()) {
             permissionCheck()
