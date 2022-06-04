@@ -73,26 +73,6 @@ MapView.MapViewEventListener {
             binding.mapView.zoomOut(true)
         }
     }
-    //말풍선 레이아웃
-    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
-        val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
-        val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
-        val address: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_address)
-
-        override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
-            // 마커 클릭 시 나오는 말풍선
-            name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
-            address.text = "정보 없음."
-            return mCalloutBalloon
-        }
-
-        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
-            // 말풍선 클릭 시
-            address.text = ""
-            return mCalloutBalloon
-        }
-    }
-
     // GPS가 켜져있는지 확인
     private fun checkLocationService(): Boolean {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -180,6 +160,26 @@ MapView.MapViewEventListener {
     }
 
     private fun deleteInfo(){
+    }
+
+    //말풍선 레이아웃
+    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
+        val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
+        val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
+        val address: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_address)
+
+        override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 마커 클릭 시 나오는 말풍선
+            name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
+            address.text = "정보 없음."
+            return mCalloutBalloon
+        }
+
+        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 말풍선 클릭 시
+            address.text = ""
+            return mCalloutBalloon
+        }
     }
 
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
