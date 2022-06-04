@@ -221,6 +221,8 @@ MapView.MapViewEventListener {
                         dialogView.findViewById<TextView>(R.id.deadline).text = markerList[0].time
                     }
 
+                    for(i in markerList.indices)
+                        Toast.makeText(this, "$markerList[i]", Toast.LENGTH_SHORT).show()
                     dlg.setPositiveButton("확인",null)
                     dlg.show()
                 }
