@@ -1,11 +1,13 @@
 package com.example.mapnote
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -25,7 +27,7 @@ import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
 
-
+@SuppressLint("StaticFieldLeak")
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
@@ -152,6 +154,34 @@ MapView.MapViewEventListener {
         binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
     }
 
+    private fun insertInfo(marker_Info: MarkerEntity){
+        val insertTask = (object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().insert(marker_Info)
+            }
+
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllInfo()
+            }
+        }).execute()
+    }
+
+    private fun getAllInfo(){
+        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                markerList = db.markerDAO().getAll()
+            }
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+
+            }
+        }).execute()
+    }
+
+    private fun deleteInfo(){
+    }
+
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
     }
 
@@ -183,13 +213,20 @@ MapView.MapViewEventListener {
                     dlg.setPositiveButton("확인") { dialog, which ->
                         val loc = p1?.mapPoint
                         val itemname = dialogView.findViewById<EditText>(R.id.location_name).text.toString()
-                        p0?.removePOIItem(p1)
+                        val memo = dialogView.findViewById<EditText>(R.id.memocontent).text.toString()
+                        val time = dialogView.findViewById<EditText>(R.id.editTextTime).text.toString()
+                        val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
+                        val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                         val marker = MapPOIItem()
+                        val marker_Info = MarkerEntity(null,itemname,memo,time,lat,lng)
+
+                        p0?.removePOIItem(p1)
                         marker.itemName = itemname
                         marker.mapPoint = loc
                         marker.markerType = MapPOIItem.MarkerType.BluePin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
+                        insertInfo(marker_Info)
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()

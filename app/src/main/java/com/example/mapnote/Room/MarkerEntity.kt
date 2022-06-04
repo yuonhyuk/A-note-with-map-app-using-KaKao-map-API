@@ -5,9 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "markerInfo")
 data class MarkerEntity(
-    @PrimaryKey(autoGenerate = true) var id : Long?,
-    var place_name : String,
-    var memo : String,
-    var time : String,
-    var lat : Long,
-    var lng : Long)
+    @PrimaryKey(autoGenerate = true) var id: Long?,
+    var place_name: String,
+    var memo: String,
+    var time: String,
+    var lat: Double?,
+    var lng: Double?
+)
