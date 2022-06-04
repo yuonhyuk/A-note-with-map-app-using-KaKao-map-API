@@ -154,15 +154,26 @@ MapView.MapViewEventListener {
 
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
-        val itemList = arrayOf("해당 마커 정보 수정", "마커 삭제", "취소")
+        val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
         builder.setTitle("마커 설정")
         builder.setItems(itemList) { dialog, which ->
             when(which) {
                 0 -> {
+                    val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
+                    var dlg = AlertDialog.Builder(this@MainActivity)
+                    dlg.setView(dialogView)
+
+                    dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                    //db에 저장된 poiItem 메모정보 가져오기 dialogView.findViewById<TextView>(R.id.memocontent).text = p1?.메모
+                    //db에 저장된 poiItem 시간 가져오기 dialogView.findViewById<TextView>(R.id.memocontent).text = p1?.시간ㅇㅁ
+                    dlg.setPositiveButton("확인",null)
+                    dlg.show()
+                }
+                1 -> {
                     val dialogView = View.inflate(this@MainActivity, R.layout.input_information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     dlg.setView(dialogView)
-                    // 변경된 코드
+
                     dlg.setPositiveButton("확인") { dialog, which ->
                         val loc = p1?.mapPoint
                         val itemname = dialogView.findViewById<EditText>(R.id.location_name).text.toString()
@@ -177,8 +188,8 @@ MapView.MapViewEventListener {
                     dlg.setNegativeButton("취소", null)
                     dlg.show()
                 }
-                1 -> p0?.removePOIItem(p1)    // 마커 삭제
-                2 -> dialog.dismiss()   // 대화상자 닫기
+                2 -> p0?.removePOIItem(p1)    // 마커 삭제
+                3 -> dialog.dismiss()   // 대화상자 닫기
             }
         }
         builder.show()
