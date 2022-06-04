@@ -188,8 +188,6 @@ MapView.MapViewEventListener {
         }
 
         override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
-            // 말풍선 클릭 시
-            address.text = ""
             return mCalloutBalloon
         }
     }
@@ -232,22 +230,27 @@ MapView.MapViewEventListener {
                     dlg.setView(dialogView)
 
                     dlg.setPositiveButton("확인") { dialog, which ->
+                        //입력하지 않으면 경고창 뜨게 하는 기능 추가하기(에러 방지)
                         val loc = p1?.mapPoint
                         val itemname = dialogView.findViewById<EditText>(R.id.location_name).text.toString()
                         val memo = dialogView.findViewById<EditText>(R.id.memocontent).text.toString()
+                        val date = dialogView.findViewById<EditText>(R.id.edittextdate).text.toString()
                         val time = dialogView.findViewById<EditText>(R.id.edittexttime).text.toString()
                         val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                         val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                         val marker = MapPOIItem()
-                        val marker_Info = MarkerEntity(null,itemname,memo,time,lat,lng)
+                        val marker_Info = MarkerEntity(null,itemname,memo,date,time,lat,lng)
 
+                        //poiItem 추가
                         p0?.removePOIItem(p1)
                         marker.itemName = itemname
                         marker.mapPoint = loc
                         marker.markerType = MapPOIItem.MarkerType.YellowPin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
-                        insertInfo(marker_Info)
+
+                        //db에서 lat,lng 같으면 이전 db 업데이트 기능 추가하기
+                        insertInfo(marker_Info) //update로 변경하기
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()

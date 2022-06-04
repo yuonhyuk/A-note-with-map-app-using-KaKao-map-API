@@ -13,9 +13,9 @@ interface MarkerDAO {
     fun insert(marker_Info : MarkerEntity)
 
     @Query("SELECT * FROM  markerInfo")
-    fun getAll() : LiveData<List<MarkerEntity>>
+    fun getAll() : List<MarkerEntity>
 
-    @Query("SELECT * FROM markerInfo WHERE place_name = :marker")
+    @Query("SELECT * FROM markerInfo WHERE place_name LIKE :marker")
     fun getAn(marker: String?) : List<MarkerEntity>
 
     @Delete

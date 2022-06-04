@@ -19,6 +19,12 @@
             android:textColor="#9C27B0"
             android:textSize="23dp" />
 
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="?android:attr/listDivider" />
+
         <EditText
             android:id="@+id/location_name"
             android:layout_width="match_parent"
@@ -37,6 +43,12 @@
             android:textColor="#9C27B0"
             android:textSize="23dp" />
 
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="?android:attr/listDivider" />
+
         <EditText
             android:id="@+id/memocontent"
             android:layout_width="match_parent"
@@ -54,14 +66,36 @@
             android:textColor="#9C27B0"
             android:textSize="23dp" />
 
-        <EditText
-            android:id="@+id/edittexttime"
+        <View
+            android:id="@+id/divider3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="ex) 10:00"
-            android:inputType="time"
-            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+            android:layout_height="10dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edittextdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="ex) 21-08-02"
+                android:inputType="date"
+                tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+
+            <EditText
+                android:id="@+id/edittexttime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="ex) 10:00"
+                android:inputType="time"
+                tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+        </LinearLayout>
 
     </LinearLayout>
 
