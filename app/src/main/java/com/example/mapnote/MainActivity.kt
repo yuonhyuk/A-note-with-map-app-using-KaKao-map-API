@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -26,7 +27,6 @@ import net.daum.mf.map.api.MapView
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
-    private val eventListener = MarkerEventListener(this)
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,8 @@ MapView.MapViewEventListener {
         binding.mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
 
         binding.mapView.setMapViewEventListener(this)
-        binding.mapView.setPOIItemEventListener(eventListener)
+        binding.mapView.setPOIItemEventListener(this)
+
         if (checkLocationService()) {
             permissionCheck()
         }
@@ -81,39 +82,6 @@ MapView.MapViewEventListener {
             // 말풍선 클릭 시
             address.text = ""
             return mCalloutBalloon
-        }
-    }
-    //말풍선 클릭시 동작 정의 이벤트 리스너
-    class MarkerEventListener(val context: Context): MapView.POIItemEventListener {
-        override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
-        }
-
-        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?) {
-        }
-
-        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?, buttonType: MapPOIItem.CalloutBalloonButtonType?) {
-            // 말풍선 클릭 시
-            val builder = AlertDialog.Builder(context)
-            val itemList = arrayOf("해당 마커 정보 입력", "마커 삭제", "취소")
-            builder.setTitle("마커 설정")
-            builder.setItems(itemList) { dialog, which ->
-                when(which) {
-                    0 -> {
-                        var dlg = InfoDialog(context)
-                        dlg.show()
-                        dlg.setOnClickedListner(object : InfoDialog.BtnOnClickListner{
-                            override fun onClicked(localname: String,memotext: String,deadTime: String){
-                                poiItem?.itemName = localname
-                            }
-                        })
-                    }
-                    1 -> mapView?.removePOIItem(poiItem)    // 마커 삭제
-                    2 -> dialog.dismiss()   // 대화상자 닫기
-                }
-            }
-            builder.show()
-        }
-        override fun onDraggablePOIItemMoved(mapView: MapView?, poiItem: MapPOIItem?, mapPoint: MapPoint?) {
         }
     }
 
@@ -185,6 +153,35 @@ MapView.MapViewEventListener {
     }
 
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
+        val builder = AlertDialog.Builder(this)
+        val itemList = arrayOf("해당 마커 정보 수정", "마커 삭제", "취소")
+        builder.setTitle("마커 설정")
+        builder.setItems(itemList) { dialog, which ->
+            when(which) {
+                0 -> {
+                    val dialogView = View.inflate(this@MainActivity, R.layout.input_information_dialog, null)
+                    var dlg = AlertDialog.Builder(this@MainActivity)
+                    dlg.setView(dialogView)
+                    // 변경된 코드
+                    dlg.setPositiveButton("확인") { dialog, which ->
+                        val loc = p1?.mapPoint
+                        val itemname = dialogView.findViewById<EditText>(R.id.location_name).text.toString()
+                        p0?.removePOIItem(p1)
+                        val marker = MapPOIItem()
+                        marker.itemName = itemname
+                        marker.mapPoint = loc
+                        marker.markerType = MapPOIItem.MarkerType.BluePin
+                        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+                        binding.mapView.addPOIItem(marker)
+                    }
+                    dlg.setNegativeButton("취소", null)
+                    dlg.show()
+                }
+                1 -> p0?.removePOIItem(p1)    // 마커 삭제
+                2 -> dialog.dismiss()   // 대화상자 닫기
+            }
+        }
+        builder.show()
     }
 
     override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
