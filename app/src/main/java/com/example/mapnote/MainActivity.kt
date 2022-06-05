@@ -171,14 +171,14 @@ MapView.MapViewEventListener {
         return flag
     }
 
-    private fun updateInfo(marker_Info: MarkerEntity){
+    private fun updateInfo(local_name:String,memo:String,date:String,time:String,lat: Double,lng: Double){
         val updateTask = (object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().update(marker_Info)
+                db.markerDAO().update(local_name, memo, date, time, lat, lng)
             }
             override fun onPostExecute(result: Unit?) {
                 super.onPostExecute(result)
-
+                getAllInfo()
             }
         }).execute()
     }
@@ -267,6 +267,7 @@ MapView.MapViewEventListener {
                         val marker = MapPOIItem()
                         val marker_Info = MarkerEntity(null,itemname,memo,date,time,lat,lng)
 
+                        getAllInfo()
                         //poiItem 추가
                         p0?.removePOIItem(p1)
                         marker.itemName = itemname
@@ -276,7 +277,13 @@ MapView.MapViewEventListener {
                         binding.mapView.addPOIItem(marker)
 
                         //db에서 lat,lng 같으면 이전 db 업데이트 기능 추가하기
-                        insertInfo(marker_Info) //update로 변경하기
+                        if(searchInfo(loc!!.mapPointGeoCoord.latitude,loc!!.mapPointGeoCoord.longitude)==true)
+                        {
+                            updateInfo(p1?.itemName,memo,date,time, lat!!, lng!!)
+                        }
+                        else{
+                            insertInfo(marker_Info)
+                        }
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()
