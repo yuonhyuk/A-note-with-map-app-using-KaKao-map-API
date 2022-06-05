@@ -12,12 +12,12 @@ interface MarkerDAO {
     @Query("SELECT * FROM  markerInfo")
     fun getAll() : List<MarkerEntity>
 
-    @Query("SELECT * FROM markerInfo WHERE place_name LIKE :marker")
-    fun getAn(marker: String?) : MarkerEntity
+    @Query("SELECT * FROM  markerInfo WHERE lat LIKE :lat AND lng LIKE :lng")
+    fun search(lat : Double, lng : Double) : Boolean
 
     @Delete
     fun delete(marker_Info: MarkerEntity)
 
-    @Query("UPDATE markerInfo SET place_name = :local_name,memo = :memo_edit, date= :date_edit,time=:time_edit WHERE ((lat MATCH:lat_edit) AND (lng MATCH :lng_edit))")
-    fun update(local_name : String, memo_edit : String, date_edit : String, time_edit :String, lat_edit : Double, lng_edit : Double)
+    @Update
+    fun update(marker_Info: MarkerEntity)
 }

@@ -88,17 +88,21 @@
 
             <TextView
                 android:id="@+id/deaddate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textColor="@color/black"
+                android:textAlignment="center"
+                android:layout_weight="1"
                 android:textSize="15dp" />
 
             <TextView
                 android:id="@+id/deadline"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text=""
+                android:textAlignment="center"
+                android:layout_weight="1"
                 android:textColor="@color/black"
                 android:textSize="15dp" />
         </LinearLayout>

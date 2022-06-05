@@ -33,7 +33,6 @@ MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var db : MarkerDataBase
     var markerList = listOf<MarkerEntity>()
-    var anMarker = mutableListOf<Any>(4)
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,32 +154,27 @@ MapView.MapViewEventListener {
             override fun doInBackground(vararg p0: Unit?) {
                 markerList = db.markerDAO().getAll()
             }
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-
-            }
         }).execute()
     }
 
-    private fun updateInfo(){
-        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
+    private fun searchInfo(lat:Double,lng:Double): Boolean {
+        var flag = true
+        val searchTask = (object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().update()
+                flag = db.markerDAO().search(lat!!, lng!!) != null
             }
             override fun onPostExecute(result: Unit?) {
                 super.onPostExecute(result)
-
+                getAllInfo()
             }
         }).execute()
+        return flag
     }
 
-    private fun getAnInfo(loc_name : String?){
-        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
+    private fun updateInfo(marker_Info: MarkerEntity){
+        val updateTask = (object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
-                anMarker.set(0,db.markerDAO().getAn(loc_name).place_name)
-                anMarker.set(1,db.markerDAO().getAn(loc_name).memo)
-                anMarker.set(2,db.markerDAO().getAn(loc_name).date)
-                anMarker.set(3,db.markerDAO().getAn(loc_name).time)
+                db.markerDAO().update(marker_Info)
             }
             override fun onPostExecute(result: Unit?) {
                 super.onPostExecute(result)
@@ -188,6 +182,7 @@ MapView.MapViewEventListener {
             }
         }).execute()
     }
+
     private fun deleteInfo(){
     }
 
@@ -226,18 +221,31 @@ MapView.MapViewEventListener {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     dlg.setView(dialogView)
+                    getAllInfo()
 
-                    if(anMarker.isEmpty()){
+                    if(markerList.isEmpty()){
                         dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
                         dialogView.findViewById<TextView>(R.id.memocontent).text = ""
+                        dialogView.findViewById<TextView>(R.id.deaddate).text = ""
+                        dialogView.findViewById<TextView>(R.id.deadline).text = ""
+                    }
+                    else if(!searchInfo(p1?.mapPoint?.mapPointGeoCoord!!.latitude,
+                            p1?.mapPoint?.mapPointGeoCoord!!.longitude)){
+                        dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                        dialogView.findViewById<TextView>(R.id.memocontent).text = ""
+                        dialogView.findViewById<TextView>(R.id.deaddate).text = ""
                         dialogView.findViewById<TextView>(R.id.deadline).text = ""
                     }
                     else{
-                        Toast.makeText(this, "$anMarker", Toast.LENGTH_SHORT).show()
-                        //dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                        //dialogView.findViewById<TextView>(R.id.memocontent).text = anMarker[1].toString()
-                        //dialogView.findViewById<TextView>(R.id.deaddate).text = anMarker[2].toString()
-                        //dialogView.findViewById<TextView>(R.id.deadline).text = anMarker[3].toString()
+                        for(i in markerList.indices)
+                        {
+                            if((p1?.mapPoint.mapPointGeoCoord.latitude == markerList[i].lat)&&(p1?.mapPoint.mapPointGeoCoord.longitude == markerList[i].lng)){
+                                dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                                dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[i].memo
+                                dialogView.findViewById<TextView>(R.id.deaddate).text = markerList[i].date
+                                dialogView.findViewById<TextView>(R.id.deadline).text = markerList[i].time
+                            }
+                        }
                     }
                     dlg.setPositiveButton("확인",null)
                     dlg.show()
