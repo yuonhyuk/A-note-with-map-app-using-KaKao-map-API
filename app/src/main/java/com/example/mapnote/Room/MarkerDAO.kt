@@ -1,11 +1,8 @@
 package com.example.mapnote.Room
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
+import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 
 @Dao
 interface MarkerDAO {
@@ -20,4 +17,7 @@ interface MarkerDAO {
 
     @Delete
     fun delete(marker_Info: MarkerEntity)
+
+    @Query("UPDATE markerInfo SET place_name = :local_name,memo = :memo_edit, date= :date_edit,time=:time_edit WHERE ((lat MATCH:lat_edit) AND (lng MATCH :lng_edit))")
+    fun update(local_name : String, memo_edit : String, date_edit : String, time_edit :String, lat_edit : Double, lng_edit : Double)
 }

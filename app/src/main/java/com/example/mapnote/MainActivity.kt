@@ -162,6 +162,18 @@ MapView.MapViewEventListener {
         }).execute()
     }
 
+    private fun updateInfo(){
+        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().update()
+            }
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+
+            }
+        }).execute()
+    }
+
     private fun getAnInfo(loc_name : String?){
         val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
             override fun doInBackground(vararg p0: Unit?) {
