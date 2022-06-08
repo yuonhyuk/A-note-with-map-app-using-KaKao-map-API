@@ -1,15 +1,16 @@
 package com.example.mapnote.Room
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "markerInfo")
-data class MarkerEntity(
-    @PrimaryKey(autoGenerate = true) var id: Long?,
-    var place_name: String,
-    var memo: String,
-    var date: String,
-    var time: String,
-    var lat: Double?,
-    var lng: Double?
+@Entity
+data class MarkerInfo(
+    @PrimaryKey(autoGenerate = true) val mid: Long?,
+    @ColumnInfo(name = "place") var name: String?,
+    @ColumnInfo(name = "content") var content: String?,
+    @ColumnInfo(name = "date") var date: String?,
+    @ColumnInfo(name = "time") var time: String?,
+    @ColumnInfo(name = "lat") var lat: Double?,
+    @ColumnInfo(name = "lng") var lng: Double?
 )

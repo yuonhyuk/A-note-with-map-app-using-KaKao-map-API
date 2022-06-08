@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = arrayOf(MarkerEntity::class), version = 2)
+@Database(entities = [MarkerInfo::class], version = 5)
 abstract class MarkerDataBase : RoomDatabase(){
     abstract fun markerDAO() : MarkerDAO
 

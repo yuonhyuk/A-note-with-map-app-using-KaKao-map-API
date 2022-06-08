@@ -2,22 +2,30 @@ package com.example.mapnote.Room
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import androidx.room.OnConflictStrategy.REPLACE
 
 @Dao
 interface MarkerDAO {
-    @Insert(onConflict = REPLACE)
-    fun insert(marker_Info : MarkerEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(markerInfo: MarkerInfo)
 
-    @Query("SELECT * FROM  markerInfo")
-    fun getAll() : List<MarkerEntity>
+    @Query("SELECT * FROM markerInfo")
+    fun getAll(): List<MarkerInfo>
 
-    @Query("SELECT * FROM  markerInfo WHERE lat LIKE :lat AND lng LIKE :lng")
-    fun search(lat : Double, lng : Double) : Boolean
+    @Query("SELECT * FROM markerInfo WHERE lat=:lat AND lng=:lng")
+    fun getId(lat: Double,lng:Double) : MarkerInfo
 
-    @Query("UPDATE markerInfo SET place_name = :local_name, memo = :memo, date = :date, time = :time WHERE lat = :lat AND lng=:lng")
-    fun update(local_name : String,memo:String,date:String,time:String,lat: Double,lng: Double)
+    /*@Query("UPDATE markerinfo SET content = :name WHERE mid = :id")
+    fun name_update(id: Long, name : String)
+
+    @Query("UPDATE markerinfo SET content = :memo WHERE mid = :id")
+    fun content_update(id: Long, memo : String)
+
+    @Query("UPDATE markerinfo SET date = :date WHERE mid = :id")
+    fun date_update(id: Long, date : String)
+
+    @Query("UPDATE markerinfo SET time = :time WHERE mid = :id")
+    fun time_update(id: Long, time : String)*/
 
     @Delete
-    fun delete(marker_Info: MarkerEntity)
+    fun delete(markerInfo: MarkerInfo)
 }

@@ -19,8 +19,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
 import com.example.mapnote.Room.MarkerDataBase
-import com.example.mapnote.Room.MarkerEntity
+import com.example.mapnote.Room.MarkerInfo
 import com.example.mapnote.databinding.ActivityMainBinding
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
 MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var db : MarkerDataBase
-    var markerList = listOf<MarkerEntity>()
+    var markerList = listOf<MarkerInfo>()
     private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +48,6 @@ MapView.MapViewEventListener {
         binding.mapView.setPOIItemEventListener(this)
 
         db = MarkerDataBase.getInstance((this))!!
-        getAllInfo()
 
         if (checkLocationService()) {
             permissionCheck()
@@ -66,7 +66,10 @@ MapView.MapViewEventListener {
         if (MapView.isMapTilePersistentCacheEnabled()) {
             MapView.setMapTilePersistentCacheEnabled(true)
         }
-
+        binding.button.setOnClickListener(){
+            binding.mapView.removeAllPOIItems()
+            //
+        }
         binding.zoomout.setOnClickListener(){
             binding.mapView.zoomIn(true)
         }
@@ -135,57 +138,6 @@ MapView.MapViewEventListener {
         binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
     }
 
-    private fun insertInfo(marker_Info: MarkerEntity){
-        val insertTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().insert(marker_Info)
-            }
-
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllInfo()
-            }
-        }
-        insertTask.execute()
-    }
-
-    private fun getAllInfo(){
-        val getTask = (object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                markerList = db.markerDAO().getAll()
-            }
-        }).execute()
-    }
-
-    private fun searchInfo(lat:Double,lng:Double): Boolean {
-        var flag = true
-        val searchTask = (object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                flag = db.markerDAO().search(lat!!, lng!!) != null
-            }
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllInfo()
-            }
-        }).execute()
-        return flag
-    }
-
-    private fun updateInfo(local_name:String,memo:String,date:String,time:String,lat: Double,lng: Double){
-        val updateTask = (object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().update(local_name, memo, date, time, lat, lng)
-            }
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllInfo()
-            }
-        }).execute()
-    }
-
-    private fun deleteInfo(){
-    }
-
     //말풍선 레이아웃
     class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
         val mCalloutBalloon: View = inflater.inflate(R.layout.balloon, null)
@@ -210,6 +162,92 @@ MapView.MapViewEventListener {
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
     }
 
+    //1.insert
+    private fun insertData(markerInfo: MarkerInfo){
+        val insertTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().insert(markerInfo)
+            }
+
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
+        }.execute()
+    }
+    //2.getAlldata
+    private fun getAllData(){
+        val getAllTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                markerList = db.markerDAO().getAll()
+            }
+        }.execute()
+    }
+    //3.delete
+    private fun deleteData(markerInfo: MarkerInfo){
+        val deleteTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().delete(markerInfo)
+            }
+
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
+        }.execute()
+    }
+    //get row ID
+    private fun getId(lat:Double,lng:Double):Long{
+        var id :Long = 0L
+        val getTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                id = db.markerDAO().getId(lat,lng).mid!!
+            }
+        }.execute()
+        return id
+    }
+    
+    /*//5-1.name update
+    private fun nameUpdate(id:Long,name :String){
+        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().name_update(id,name)
+            }
+        }.execute()
+    }
+
+    //5-2.content update
+    private fun contentUpdate(id:Long,content :String){
+        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().content_update(id,content)
+            }
+        }.execute()
+    }
+
+    //5-3.date update
+    private fun dateUpdate(id:Long,date :String){
+        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().date_update(id,date)
+            }
+        }.execute()
+    }
+
+    //5-4.time update
+    private fun timeUpdate(id:Long,time :String){
+        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
+            override fun doInBackground(vararg p0: Unit?) {
+                db.markerDAO().time_update(id, time)
+            }
+
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
+        }.execute()
+    }*/
+
     @SuppressLint("CutPasteId")
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
@@ -220,33 +258,36 @@ MapView.MapViewEventListener {
                 0 -> {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
+                    val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
+                    val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                     dlg.setView(dialogView)
-                    getAllInfo()
 
-                    if(markerList.isEmpty()){
+                    if(markerList.isEmpty())
+                    {
                         dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                        dialogView.findViewById<TextView>(R.id.memocontent).text = ""
-                        dialogView.findViewById<TextView>(R.id.deaddate).text = ""
-                        dialogView.findViewById<TextView>(R.id.deadline).text = ""
-                    }
-                    else if(!searchInfo(p1?.mapPoint?.mapPointGeoCoord!!.latitude,
-                            p1?.mapPoint?.mapPointGeoCoord!!.longitude)){
-                        dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                        dialogView.findViewById<TextView>(R.id.memocontent).text = ""
-                        dialogView.findViewById<TextView>(R.id.deaddate).text = ""
-                        dialogView.findViewById<TextView>(R.id.deadline).text = ""
+                        dialogView.findViewById<TextView>(R.id.memocontent).text = "빔"
+                        dialogView.findViewById<TextView>(R.id.deaddate).text = "빔"
+                        dialogView.findViewById<TextView>(R.id.deadline).text = "빔"
                     }
                     else{
                         for(i in markerList.indices)
                         {
-                            if((p1?.mapPoint.mapPointGeoCoord.latitude == markerList[i].lat)&&(p1?.mapPoint.mapPointGeoCoord.longitude == markerList[i].lng)){
+                            if ((markerList[i].lat==lat)&&(markerList[i].lng==lng)){
                                 dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                                dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[i].memo
+                                dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[i].content
                                 dialogView.findViewById<TextView>(R.id.deaddate).text = markerList[i].date
                                 dialogView.findViewById<TextView>(R.id.deadline).text = markerList[i].time
+                                Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                            }
+                            else{
+                                dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
+                                dialogView.findViewById<TextView>(R.id.memocontent).text = "없음"
+                                dialogView.findViewById<TextView>(R.id.deaddate).text = "없음"
+                                dialogView.findViewById<TextView>(R.id.deadline).text = "없음"
                             }
                         }
                     }
+
                     dlg.setPositiveButton("확인",null)
                     dlg.show()
                 }
@@ -264,10 +305,9 @@ MapView.MapViewEventListener {
                         val time = dialogView.findViewById<EditText>(R.id.edittexttime).text.toString()
                         val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                         val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
+                        val marker_Info = MarkerInfo(null,itemname,memo,date,time,lat,lng)
                         val marker = MapPOIItem()
-                        val marker_Info = MarkerEntity(null,itemname,memo,date,time,lat,lng)
 
-                        getAllInfo()
                         //poiItem 추가
                         p0?.removePOIItem(p1)
                         marker.itemName = itemname
@@ -276,13 +316,18 @@ MapView.MapViewEventListener {
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
 
-                        //db에서 lat,lng 같으면 이전 db 업데이트 기능 추가하기
-                        if(searchInfo(loc!!.mapPointGeoCoord.latitude,loc!!.mapPointGeoCoord.longitude)==true)
+                        if(markerList.isEmpty())
                         {
-                            updateInfo(p1?.itemName,memo,date,time, lat!!, lng!!)
+                            insertData(marker_Info)
                         }
-                        else{
-                            insertInfo(marker_Info)
+                        else if (markerList.isNotEmpty())
+                        {
+                            /*
+                            nameUpdate(getId(lat!!, lng!!),itemname)
+                            contentUpdate(getId(lat, lng),memo)
+                            dateUpdate(getId(lat, lng),date)
+                            timeUpdate(getId(lat, lng),time)
+                             */
                         }
                     }
                     dlg.setNegativeButton("취소", null)
