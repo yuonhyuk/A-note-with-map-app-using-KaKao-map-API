@@ -1,14 +1,7 @@
 package com.example.mapnote
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -16,8 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.mapnote.Room.MarkerDataBase
 import com.example.mapnote.Room.MarkerInfo
 import com.example.mapnote.databinding.ActivityMainBinding
@@ -35,7 +26,6 @@ MapView.MapViewEventListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var db : MarkerDataBase
     var markerList = listOf<MarkerInfo>()
-    private val ACCESS_FINE_LOCATION = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +40,6 @@ MapView.MapViewEventListener {
 
         db = MarkerDataBase.getInstance((this))!!
 
-        if (checkLocationService()) {
-            permissionCheck()
-        }
-        else {
-            Toast.makeText(this, "현재 위치를 확인하기 위해서는 GPS를 켜주세요", Toast.LENGTH_SHORT).show()
             binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(37.5663, 126.9779),3,true)
             val marker = MapPOIItem()
             marker.itemName = "서울 시청"
@@ -62,7 +47,6 @@ MapView.MapViewEventListener {
             marker.markerType = MapPOIItem.MarkerType.BluePin
             marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
             binding.mapView.addPOIItem(marker)
-        }
 
         if (MapView.isMapTilePersistentCacheEnabled()) {
             MapView.setMapTilePersistentCacheEnabled(true)
@@ -88,66 +72,6 @@ MapView.MapViewEventListener {
         binding.zoomin.setOnClickListener(){
             binding.mapView.zoomOut(true)
         }
-    }
-    // GPS가 켜져있는지 확인
-    private fun checkLocationService(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
-    // 앱 위치 권한 확인
-    private fun permissionCheck() {
-        val preference = getPreferences(MODE_PRIVATE)
-        val isFirstCheck = preference.getBoolean("isFirstPermissionCheck", true)
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // 권한이 없는 상태
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // 권한 거절
-                val builder = AlertDialog.Builder(this)
-                builder.setMessage("현재 위치를 확인하시려면 위치 권한을 허용해주세요.")
-                builder.setPositiveButton("확인") { dialog, which ->
-                    ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
-                }
-                builder.setNegativeButton("취소") { dialog, which ->
-                }
-                builder.show()
-            } else {
-                if (isFirstCheck) {
-                    // 최초 권한 요청
-                    preference.edit().putBoolean("isFirstPermissionCheck", false).apply()
-                    ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), ACCESS_FINE_LOCATION)
-                } else {
-                    val builder = AlertDialog.Builder(this)
-                    builder.setMessage("현재 위치를 확인하시려면 설정에서 위치 권한을 허용해주세요.")
-                    builder.setPositiveButton("설정으로 이동") { dialog, which ->
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
-                        startActivity(intent)
-                    }
-                    builder.setNegativeButton("취소") {
-                            dialog, which ->
-                    }
-                    builder.show()
-                }
-            }
-        }
-    }
-
-    // 권한 요청
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == ACCESS_FINE_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "위치 권한이 승인되었습니다", Toast.LENGTH_SHORT).show()
-                startTracking()
-            } else {
-                Toast.makeText(this, "위치 권한이 거절되었습니다", Toast.LENGTH_SHORT).show()
-                permissionCheck()
-            }
-        }
-    }
-    // 현재 위치 트래킹
-    private fun startTracking() {
-        binding.mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
     }
 
     //말풍선 레이아웃
