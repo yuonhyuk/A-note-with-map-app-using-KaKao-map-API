@@ -68,8 +68,17 @@ MapView.MapViewEventListener {
             MapView.setMapTilePersistentCacheEnabled(true)
         }
         binding.button.setOnClickListener(){
+            getAllData()
             binding.mapView.removeAllPOIItems()
-            //
+            for(i in markerList.indices)
+            {
+                val marker = MapPOIItem()
+                marker.itemName = markerList[i].name
+                marker.mapPoint = MapPoint.mapPointWithGeoCoord(markerList[i].lat!!, markerList[i].lng!!)
+                marker.markerType = MapPOIItem.MarkerType.YellowPin
+                marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+                binding.mapView.addPOIItem(marker)
+            }
         }
         binding.zoomout.setOnClickListener(){
             binding.mapView.zoomIn(true)
@@ -291,6 +300,7 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
+        binding.mapView.removeAllPOIItems()
     }
 
     override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {
