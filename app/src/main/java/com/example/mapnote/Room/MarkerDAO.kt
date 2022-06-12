@@ -11,9 +11,6 @@ interface MarkerDAO {
     @Query("SELECT * FROM markerInfo")
     suspend fun getAll(): List<MarkerInfo>
 
-    @Update
-    suspend fun update(markerInfo: MarkerInfo)
-
     @Delete
     suspend fun delete(markerInfo: MarkerInfo)
 

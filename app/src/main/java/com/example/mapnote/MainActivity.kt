@@ -192,13 +192,6 @@ MapView.MapViewEventListener {
         getAllData()
     }
 
-    private fun update(markerInfo: MarkerInfo){
-        CoroutineScope(Dispatchers.IO).launch {
-            db.markerDAO().update(markerInfo)
-        }
-        getAllData()
-    }
-
     @SuppressLint("CutPasteId")
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
@@ -212,14 +205,16 @@ MapView.MapViewEventListener {
                     val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                     val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                     dlg.setView(dialogView)
-                    getAllData()
-                    
+                    for(i in 1..2){
+                        getAllData()
+                    }
+
                     if(markerList.isEmpty())
                     {
                         dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                        dialogView.findViewById<TextView>(R.id.memocontent).text = "빔"
-                        dialogView.findViewById<TextView>(R.id.deaddate).text = "빔"
-                        dialogView.findViewById<TextView>(R.id.deadline).text = "빔"
+                        dialogView.findViewById<TextView>(R.id.memocontent).text = "정보 없음"
+                        dialogView.findViewById<TextView>(R.id.deaddate).text = "정보 없음"
+                        dialogView.findViewById<TextView>(R.id.deadline).text = "정보 없음"
                     }
                     else{
                         for(i in markerList.indices)
@@ -229,14 +224,13 @@ MapView.MapViewEventListener {
                                 dialogView.findViewById<TextView>(R.id.memocontent).text = markerList[i].content
                                 dialogView.findViewById<TextView>(R.id.deaddate).text = markerList[i].date
                                 dialogView.findViewById<TextView>(R.id.deadline).text = markerList[i].time
-                                Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
                                 break
                             }
                             else{
                                 dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
-                                dialogView.findViewById<TextView>(R.id.memocontent).text = "없음"
-                                dialogView.findViewById<TextView>(R.id.deaddate).text = "없음"
-                                dialogView.findViewById<TextView>(R.id.deadline).text = "없음"
+                                dialogView.findViewById<TextView>(R.id.memocontent).text = "정보 없음"
+                                dialogView.findViewById<TextView>(R.id.deaddate).text = "정보 없음"
+                                dialogView.findViewById<TextView>(R.id.deadline).text = "정보 없음"
                             }
                         }
                     }
@@ -268,8 +262,10 @@ MapView.MapViewEventListener {
                         marker.markerType = MapPOIItem.MarkerType.YellowPin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
-                        insertData(markerInfo)
-                        getAllData()
+                        for(i in 1..2){
+                            insertData(markerInfo)
+                            getAllData()
+                        }
                         Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
                     }
                     dlg.setNegativeButton("취소", null)
