@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -22,6 +21,9 @@ import androidx.core.content.ContextCompat
 import com.example.mapnote.Room.MarkerDataBase
 import com.example.mapnote.Room.MarkerInfo
 import com.example.mapnote.databinding.ActivityMainBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
@@ -163,128 +165,64 @@ MapView.MapViewEventListener {
 
     //1.insert
     private fun insertData(markerInfo: MarkerInfo){
-        val insertTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().insert(markerInfo)
-            }
-
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllData()
-            }
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            db.markerDAO().insert(markerInfo)
+        }
+        getAllData()
     }
     //2.getAlldata
     private fun getAllData(){
-        val getAllTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                markerList = db.markerDAO().getAll()
-            }
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            markerList = db.markerDAO().getAll()
+        }
     }
     //3.delete
     private fun deleteData(markerInfo: MarkerInfo){
-        val deleteTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().delete(markerInfo)
-            }
-
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllData()
-            }
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            db.markerDAO().delete(markerInfo)
+        }
+        getAllData()
     }
+
+    //4.deleteAll
+    private fun deleteAll(){
+        CoroutineScope(Dispatchers.IO).launch {
+            db.markerDAO().deleteAll()
+        }
+        getAllData()
+    }
+
     //get row ID
     private fun getId(lat:Double,lng:Double):Long{
         var id :Long = 0L
-        val getTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                id = db.markerDAO().getId(lat,lng).mid!!
-            }
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            id = db.markerDAO().getId(lat, lng).mid!!
+        }
+        getAllData()
         return id
     }
 
-    private fun search(markerInfo: MarkerInfo): MarkerInfo {
-        var item = MarkerInfo(null,null,null,null,null,null,null)
-        val getTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                item = db.markerDAO().search(markerInfo.lat,markerInfo.lng)
-            }
-        }.execute()
-        return item
-    }
-
     private fun update(markerInfo: MarkerInfo){
-        var item = MarkerInfo(null,null,null,null,null,null,null)
-        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().update(item)
-            }
-
-            override fun onPreExecute() {
-                super.onPreExecute()
-                item = search(markerInfo)
-            }
-        }.execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            db.markerDAO().update(markerInfo)
+        }
+        getAllData()
     }
-
-    /*//5-1.name update
-    private fun nameUpdate(id: Int?, name:String){
-        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().name_update(id,name)
-            }
-        }.execute()
-    }
-
-    //5-2.content update
-    private fun contentUpdate(id: Int?, content:String){
-        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().content_update(id,content)
-            }
-        }.execute()
-    }
-
-    //5-3.date update
-    private fun dateUpdate(id: Int?, date:String){
-        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().date_update(id,date)
-            }
-        }.execute()
-    }
-
-    //5-4.time update
-    private fun timeUpdate(id: Int?, time:String){
-        val updateTask = object : AsyncTask<Unit,Unit,Unit>(){
-            override fun doInBackground(vararg p0: Unit?) {
-                db.markerDAO().time_update(id, time)
-            }
-
-            override fun onPostExecute(result: Unit?) {
-                super.onPostExecute(result)
-                getAllData()
-            }
-        }.execute()
-    }*/
 
     @SuppressLint("CutPasteId")
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
-        val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
+        //val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
+        val itemList = arrayOf("insert 후 보기","delete후 보기", "deleteAll후 보기", "update 후 보기")
         builder.setTitle("마커 설정")
         builder.setItems(itemList) { dialog, which ->
             when(which) {
-                0 -> {
+                /*0 -> {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                     val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                     dlg.setView(dialogView)
-                    getAllData()
 
                     if(markerList.isEmpty())
                     {
@@ -339,27 +277,32 @@ MapView.MapViewEventListener {
                         marker.markerType = MapPOIItem.MarkerType.YellowPin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
-
-                        //db 가져와서
-                        getAllData()
-                        for (i in markerList.indices){
-                            if((markerList[i].lat!! == lat)&&(markerList[i].lat!! == lat)){
-                                /*nameUpdate(markerList[i].mid,itemname)
-                                contentUpdate(markerList[i].mid,memo)
-                                dateUpdate(markerList[i].mid,date)
-                                timeUpdate(markerList[i].mid,time)*/
-                                break
-                            }
-                            else{
-                                insertData(markerInfo)
-                            }
-                        }
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()
                 }
                 2 -> p0?.removePOIItem(p1)    // 마커 삭제
-                3 -> dialog.dismiss()   // 대화상자 닫기
+                3 -> dialog.dismiss()   // 대화상자 닫기*/
+                0 -> {
+                    val item = MarkerInfo(null,null,null,null,null,37.5555,127.8888)
+                    insertData(item)
+                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+
+                }
+                1 ->{
+                    val item = MarkerInfo(1,null,null,null,null,37.5555,127.8888)
+                    deleteData(item)
+                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                }
+                2 ->{
+                    deleteAll()
+                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                }
+                3 ->{
+                    val item = MarkerInfo(1,null,null,null,null,36.6666,128.0000)
+                    update(item)
+                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         builder.show()

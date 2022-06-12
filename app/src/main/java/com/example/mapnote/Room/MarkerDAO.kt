@@ -6,31 +6,20 @@ import androidx.room.*
 @Dao
 interface MarkerDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(markerInfo: MarkerInfo)
+    suspend fun insert(markerInfo: MarkerInfo)
 
     @Query("SELECT * FROM markerInfo")
-    fun getAll(): List<MarkerInfo>
+    suspend fun getAll(): List<MarkerInfo>
 
     @Query("SELECT * FROM markerInfo WHERE lat=:lat AND lng=:lng")
-    fun getId(lat: Double,lng:Double) : MarkerInfo
-
-    @Query("SELECT * FROM markerInfo WHERE lat=:lat AND lng=:lng")
-    fun search(lat: Double?, lng: Double?) : MarkerInfo
+    suspend fun getId(lat: Double,lng:Double) : MarkerInfo
 
     @Update
-    fun update(markerInfo: MarkerInfo)
-    /*@Query("UPDATE markerinfo SET content = :name WHERE mid = :id")
-    fun name_update(id: Int?, name : String)
-
-    @Query("UPDATE markerinfo SET content = :memo WHERE mid = :id")
-    fun content_update(id: Int?, memo : String)
-
-    @Query("UPDATE markerinfo SET date = :date WHERE mid = :id")
-    fun date_update(id: Int?, date : String)
-
-    @Query("UPDATE markerinfo SET time = :time WHERE mid = :id")
-    fun time_update(id: Int?, time : String)*/
+    suspend fun update(markerInfo: MarkerInfo)
 
     @Delete
-    fun delete(markerInfo: MarkerInfo)
+    suspend fun delete(markerInfo: MarkerInfo)
+
+    @Query("DELETE FROM markerInfo WHERE mid > 0")
+    suspend fun deleteAll()
 }

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "markerInfo")
 data class MarkerInfo(
     @PrimaryKey(autoGenerate = true) val mid: Long?,
     @ColumnInfo(name = "place") var name: String?,
