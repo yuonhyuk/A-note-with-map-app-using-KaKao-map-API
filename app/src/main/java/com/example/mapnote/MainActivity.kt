@@ -68,7 +68,9 @@ MapView.MapViewEventListener {
             MapView.setMapTilePersistentCacheEnabled(true)
         }
         binding.button.setOnClickListener(){
-            getAllData()
+            for(i in 1..2) {
+                getAllData()
+            }
             binding.mapView.removeAllPOIItems()
             for(i in markerList.indices)
             {
