@@ -192,16 +192,6 @@ MapView.MapViewEventListener {
         getAllData()
     }
 
-    //get row ID
-    private fun getId(lat:Double,lng:Double):Long{
-        var id :Long = 0L
-        CoroutineScope(Dispatchers.IO).launch {
-            id = db.markerDAO().getId(lat, lng).mid!!
-        }
-        getAllData()
-        return id
-    }
-
     private fun update(markerInfo: MarkerInfo){
         CoroutineScope(Dispatchers.IO).launch {
             db.markerDAO().update(markerInfo)
@@ -212,18 +202,18 @@ MapView.MapViewEventListener {
     @SuppressLint("CutPasteId")
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
         val builder = AlertDialog.Builder(this)
-        //val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
-        val itemList = arrayOf("insert 후 보기","delete후 보기", "deleteAll후 보기", "update 후 보기")
+        val itemList = arrayOf("해당 마커 정보 보기","마커 정보 수정", "마커 삭제", "취소")
         builder.setTitle("마커 설정")
         builder.setItems(itemList) { dialog, which ->
             when(which) {
-                /*0 -> {
+                0 -> {
                     val dialogView = View.inflate(this@MainActivity, R.layout.information_dialog, null)
                     var dlg = AlertDialog.Builder(this@MainActivity)
                     val lat = p1?.mapPoint?.mapPointGeoCoord?.latitude
                     val lng = p1?.mapPoint?.mapPointGeoCoord?.longitude
                     dlg.setView(dialogView)
-
+                    getAllData()
+                    
                     if(markerList.isEmpty())
                     {
                         dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
@@ -240,6 +230,7 @@ MapView.MapViewEventListener {
                                 dialogView.findViewById<TextView>(R.id.deaddate).text = markerList[i].date
                                 dialogView.findViewById<TextView>(R.id.deadline).text = markerList[i].time
                                 Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                                break
                             }
                             else{
                                 dialogView.findViewById<TextView>(R.id.location_name).text = p1?.itemName
@@ -277,32 +268,15 @@ MapView.MapViewEventListener {
                         marker.markerType = MapPOIItem.MarkerType.YellowPin
                         marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                         binding.mapView.addPOIItem(marker)
+                        insertData(markerInfo)
+                        getAllData()
+                        Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()
                 }
                 2 -> p0?.removePOIItem(p1)    // 마커 삭제
-                3 -> dialog.dismiss()   // 대화상자 닫기*/
-                0 -> {
-                    val item = MarkerInfo(null,null,null,null,null,37.5555,127.8888)
-                    insertData(item)
-                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
-
-                }
-                1 ->{
-                    val item = MarkerInfo(1,null,null,null,null,37.5555,127.8888)
-                    deleteData(item)
-                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
-                }
-                2 ->{
-                    deleteAll()
-                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
-                }
-                3 ->{
-                    val item = MarkerInfo(1,null,null,null,null,36.6666,128.0000)
-                    update(item)
-                    Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
-                }
+                3 -> dialog.dismiss()   // 대화상자 닫기
             }
         }
         builder.show()

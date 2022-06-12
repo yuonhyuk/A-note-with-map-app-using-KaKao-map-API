@@ -11,9 +11,6 @@ interface MarkerDAO {
     @Query("SELECT * FROM markerInfo")
     suspend fun getAll(): List<MarkerInfo>
 
-    @Query("SELECT * FROM markerInfo WHERE lat=:lat AND lng=:lng")
-    suspend fun getId(lat: Double,lng:Double) : MarkerInfo
-
     @Update
     suspend fun update(markerInfo: MarkerInfo)
 
