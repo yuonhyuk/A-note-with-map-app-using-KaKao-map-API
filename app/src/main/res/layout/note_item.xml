@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="100dp">
 
@@ -16,7 +17,7 @@
         android:layout_marginStart="16dp"/>
 
     <TextView
-        android:id="@+id/location_name"
+        android:id="@+id/adapter_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -28,7 +29,7 @@
         app:layout_constraintVertical_bias="0.109" />
 
     <TextView
-        android:id="@+id/content"
+        android:id="@+id/adapter_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -40,7 +41,7 @@
         app:layout_constraintVertical_bias="0.52" />
 
     <TextView
-        android:id="@+id/date"
+        android:id="@+id/adapter_date"
         android:layout_width="135dp"
         android:layout_height="22dp"
         android:layout_marginStart="20dp"
@@ -52,7 +53,7 @@
         app:layout_constraintVertical_bias="0.938" />
 
     <TextView
-        android:id="@+id/time"
+        android:id="@+id/adapter_time"
         android:layout_width="130dp"
         android:layout_height="22dp"
         android:layout_marginStart="180dp"

@@ -45,13 +45,13 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
 
         db = MarkerDataBase.getInstance((this))!!
 
-            binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(37.5663, 126.9779),3,true)
-            val marker = MapPOIItem()
-            marker.itemName = "서울 시청"
-            marker.mapPoint = MapPoint.mapPointWithGeoCoord(37.5663, 126.9779)
-            marker.markerType = MapPOIItem.MarkerType.BluePin
-            marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
-            binding.mapView.addPOIItem(marker)
+        binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(37.5663, 126.9779),3,true)
+        val marker = MapPOIItem()
+        marker.itemName = "서울 시청"
+        marker.mapPoint = MapPoint.mapPointWithGeoCoord(37.5663, 126.9779)
+        marker.markerType = MapPOIItem.MarkerType.BluePin
+        marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
+        binding.mapView.addPOIItem(marker)
 
         if (MapView.isMapTilePersistentCacheEnabled()) {
             MapView.setMapTilePersistentCacheEnabled(true)
@@ -284,7 +284,7 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.map -> Toast.makeText(applicationContext,"지도",Toast.LENGTH_SHORT).show()
+            R.id.map -> {}
             R.id.note -> {
                 val intent = Intent(this,NoteActivity::class.java)
                 startActivity(intent)
