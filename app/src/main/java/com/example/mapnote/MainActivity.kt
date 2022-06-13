@@ -260,9 +260,7 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.map -> {
-                binding.layoutDrawer.closeDrawers()
-            }
+            R.id.map -> Toast.makeText(applicationContext,"지도",Toast.LENGTH_SHORT).show()
             R.id.note -> Toast.makeText(applicationContext,"리스트",Toast.LENGTH_SHORT).show()
         }
         binding.layoutDrawer.closeDrawers()
