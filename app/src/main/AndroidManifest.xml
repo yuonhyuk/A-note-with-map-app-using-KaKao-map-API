@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.mapnote">
-
     <!-- KAKAO MAP LOCATION USES PERMISSION -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +16,9 @@
         android:theme="@style/Theme.MAPNOTE"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".NoteActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -26,7 +28,9 @@
             </intent-filter>
         </activity>
 
-        //KAKAO MAP APP KEY
-        <meta-data android:name="com.kakao.sdk.AppKey" android:value="2b922e60f16f08ed54c0499eb44d7950"/>
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="2b922e60f16f08ed54c0499eb44d7950" />
     </application>
+
 </manifest>
