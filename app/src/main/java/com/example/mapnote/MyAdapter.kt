@@ -39,7 +39,6 @@ class MyAdapter (val context: Context, var list : List<MarkerInfo>, var onDelete
         val date = itemView.findViewById<TextView>(R.id.adapter_date)
         val time = itemView.findViewById<TextView>(R.id.adapter_time)
         val deletion = itemView.findViewById<ImageView>(R.id.delete)
-        val modification = itemView.findViewById<ImageView>(R.id.modify)
     }
 
 }

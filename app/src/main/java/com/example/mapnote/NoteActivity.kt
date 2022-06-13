@@ -106,7 +106,6 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
             }
             R.id.note -> {
-                getAllData()
             }
         }
         binding.layoutDrawer.closeDrawers()
