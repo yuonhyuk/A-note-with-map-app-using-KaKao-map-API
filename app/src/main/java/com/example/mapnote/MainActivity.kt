@@ -1,6 +1,8 @@
 package com.example.mapnote
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -107,31 +109,53 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
 
     //1.insert
     private fun insertData(markerInfo: MarkerInfo){
-        CoroutineScope(Dispatchers.IO).launch {
-            db.markerDAO().insert(markerInfo)
+        val insertTask = object : AsyncTask<Unit, Unit, Unit>() {
+            override fun doInBackground(vararg params: Unit?) {
+                db.markerDAO().insert(markerInfo)
+            }
+
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
         }
-        getAllData()
+        insertTask.execute()
     }
     //2.getAlldata
     private fun getAllData(){
-        CoroutineScope(Dispatchers.IO).launch {
-            markerList = db.markerDAO().getAll()
+        val getTask = object : AsyncTask<Unit, Unit, Unit>() {
+            override fun doInBackground(vararg params: Unit?) {
+                markerList = db.markerDAO().getAll()
+            }
         }
+        getTask.execute()
     }
     //3.delete
     private fun deleteData(markerInfo: MarkerInfo){
-        CoroutineScope(Dispatchers.IO).launch {
-            db.markerDAO().delete(markerInfo)
+        val deleteTask = object : AsyncTask<Unit, Unit, Unit>() {
+            override fun doInBackground(vararg params: Unit?) {
+                db.markerDAO().delete(markerInfo)
+            }
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
         }
-        getAllData()
+        deleteTask.execute()
     }
 
     //4.deleteAll
-    private fun deleteAll(){
-        CoroutineScope(Dispatchers.IO).launch {
-            db.markerDAO().deleteAll()
+    private fun deleteAllData(){
+        val deleteallTask = object : AsyncTask<Unit, Unit, Unit>() {
+            override fun doInBackground(vararg params: Unit?) {
+                db.markerDAO().deleteAll()
+            }
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
+                getAllData()
+            }
         }
-        getAllData()
+        deleteallTask.execute()
     }
 
     @SuppressLint("CutPasteId")
@@ -261,7 +285,10 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.map -> Toast.makeText(applicationContext,"지도",Toast.LENGTH_SHORT).show()
-            R.id.note -> Toast.makeText(applicationContext,"리스트",Toast.LENGTH_SHORT).show()
+            R.id.note -> {
+                val intent = Intent(this,NoteActivity::class.java)
+                startActivity(intent)
+            }
         }
         binding.layoutDrawer.closeDrawers()
         return false
