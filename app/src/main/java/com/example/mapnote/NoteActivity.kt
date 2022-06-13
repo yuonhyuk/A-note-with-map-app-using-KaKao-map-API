@@ -26,9 +26,12 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding = ActivityNoteBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        db = MarkerDataBase.getInstance((this))!!
+        for (i in 1..2)
+            getAllData()
+
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        db = MarkerDataBase.getInstance((this))!!
 
         binding.btnNavi.setOnClickListener(){
             binding.layoutDrawer.openDrawer(GravityCompat.START)
@@ -57,9 +60,8 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun doInBackground(vararg params: Unit?) {
                 markerList = db.markerDAO().getAll()
             }
-
-            override fun onPreExecute() {
-                super.onPreExecute()
+            override fun onPostExecute(result: Unit?) {
+                super.onPostExecute(result)
                 setRecyclerView(markerList)
             }
         }
@@ -96,6 +98,7 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun setRecyclerView(markerList: List<MarkerInfo>){
         binding.recyclerView.adapter = MyAdapter(this,markerList,this)
     }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.map -> {
@@ -103,10 +106,7 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(intent)
             }
             R.id.note -> {
-                for(i in 1..4){
-                    getAllData()
-                }
-                Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+                getAllData()
             }
         }
         binding.layoutDrawer.closeDrawers()
@@ -123,6 +123,8 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun OnDeleteListner(markerInfo: MarkerInfo) {
-        deleteData(markerInfo)
+        for(i in 1..2){
+            deleteData(markerInfo)
+        }
     }
 }

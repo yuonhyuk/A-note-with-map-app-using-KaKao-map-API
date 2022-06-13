@@ -78,12 +78,19 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
             var lng_avg : Double
 
             for(i in markerList.indices){
+                if(markerList.isEmpty()){
+                    break
+                }
                 lat.add(markerList[i].lat!!)
                 lng.add(markerList[i].lng!!)
             }
-            lat_avg = (((lat.min()-lat.min())/2)+lat.min())
-            lng_avg = (((lng.max()-lng.min())/2)+lng.min())
-            binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(lat_avg,lng_avg),7,true)
+            if(markerList.isEmpty()){
+            }
+            else {
+                lat_avg = (((lat.min()-lat.min())/2)+lat.min())
+                lng_avg = (((lng.max()-lng.min())/2)+lng.min())
+                binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(lat_avg,lng_avg),7,true)
+            }
         }
         binding.zoomout.setOnClickListener(){
             binding.mapView.zoomIn(true)
