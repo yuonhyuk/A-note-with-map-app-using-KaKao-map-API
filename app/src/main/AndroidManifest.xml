@@ -19,9 +19,6 @@
             android:name=".NoteActivity"
             android:exported="false" />
         <activity
-            android:name=".SecondActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
