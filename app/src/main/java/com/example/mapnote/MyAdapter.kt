@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mapnote.Room.MarkerInfo
 
-class MyAdapter (val context: Context, var list : List<MarkerInfo>): RecyclerView.Adapter<MyAdapter.MyViewHolder>(){
+class MyAdapter (val context: Context, var list : List<MarkerInfo>, var onDeleteListner: OnDeleteListner): RecyclerView.Adapter<MyAdapter.MyViewHolder>(){
 
     override fun getItemCount(): Int {
         return list.size
@@ -30,12 +30,7 @@ class MyAdapter (val context: Context, var list : List<MarkerInfo>): RecyclerVie
         holder.date.text = marker.date
         holder.time.text = marker.time
 
-        holder.root.setOnLongClickListener(object : View.OnLongClickListener{
-            override fun onLongClick(p0: View?): Boolean {
-
-                return true
-            }
-        })
+        holder.deletion.setOnClickListener { onDeleteListner.OnDeleteListner(marker) }
     }
 
     inner class MyViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
@@ -45,7 +40,6 @@ class MyAdapter (val context: Context, var list : List<MarkerInfo>): RecyclerVie
         val time = itemView.findViewById<TextView>(R.id.adapter_time)
         val deletion = itemView.findViewById<ImageView>(R.id.delete)
         val modification = itemView.findViewById<ImageView>(R.id.modify)
-        val root = itemView.findViewById<ConstraintLayout>(R.id.root)
     }
 
 }

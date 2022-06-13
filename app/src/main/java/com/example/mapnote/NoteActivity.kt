@@ -1,11 +1,13 @@
 package com.example.mapnote
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mapnote.Room.MarkerDataBase
@@ -14,7 +16,7 @@ import com.example.mapnote.databinding.ActivityNoteBinding
 import com.google.android.material.navigation.NavigationView
 
 @SuppressLint("StaticFieldLeak")
-class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,OnDeleteListner {
     private lateinit var binding: ActivityNoteBinding
     lateinit var db : MarkerDataBase
     var markerList = listOf<MarkerInfo>()
@@ -33,6 +35,7 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         binding.naviView.setNavigationItemSelectedListener(this)
     }
+
 
     //1.insert
     private fun insertData(markerInfo: MarkerInfo){
@@ -53,6 +56,11 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val getTask = object : AsyncTask<Unit, Unit, Unit>() {
             override fun doInBackground(vararg params: Unit?) {
                 markerList = db.markerDAO().getAll()
+            }
+
+            override fun onPreExecute() {
+                super.onPreExecute()
+                setRecyclerView(markerList)
             }
         }
         getTask.execute()
@@ -85,8 +93,8 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         deleteallTask.execute()
     }
 
-    fun setRecyclerView(markerInfo: MarkerInfo){
-        binding.recyclerView.adapter = MyAdapter(this,markerList)
+    fun setRecyclerView(markerList: List<MarkerInfo>){
+        binding.recyclerView.adapter = MyAdapter(this,markerList,this)
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
@@ -94,7 +102,12 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this,MainActivity::class.java)
                 startActivity(intent)
             }
-            R.id.note -> {}
+            R.id.note -> {
+                for(i in 1..4){
+                    getAllData()
+                }
+                Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.layoutDrawer.closeDrawers()
         return false
@@ -107,5 +120,9 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         else {
             super.onBackPressed()
         }
+    }
+
+    override fun OnDeleteListner(markerInfo: MarkerInfo) {
+        deleteData(markerInfo)
     }
 }

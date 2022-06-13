@@ -17,9 +17,6 @@ import com.example.mapnote.Room.MarkerDataBase
 import com.example.mapnote.Room.MarkerInfo
 import com.example.mapnote.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
@@ -38,13 +35,18 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
         val view = binding.root
         setContentView(view)
 
+
         binding.mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
 
         binding.mapView.setMapViewEventListener(this)
         binding.mapView.setPOIItemEventListener(this)
 
         db = MarkerDataBase.getInstance((this))!!
+        for(i in 1..2) {
+            getAllData()
+        }
 
+        binding.mapView.removeAllPOIItems()
         binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(37.5663, 126.9779),3,true)
         val marker = MapPOIItem()
         marker.itemName = "서울 시청"
@@ -70,6 +72,18 @@ MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
                 marker.selectedMarkerType = MapPOIItem.MarkerType.RedPin
                 binding.mapView.addPOIItem(marker)
             }
+            var lat = arrayListOf<Double>()
+            var lng = arrayListOf<Double>()
+            var lat_avg : Double
+            var lng_avg : Double
+
+            for(i in markerList.indices){
+                lat.add(markerList[i].lat!!)
+                lng.add(markerList[i].lng!!)
+            }
+            lat_avg = (((lat.min()-lat.min())/2)+lat.min())
+            lng_avg = (((lng.max()-lng.min())/2)+lng.min())
+            binding.mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(lat_avg,lng_avg),7,true)
         }
         binding.zoomout.setOnClickListener(){
             binding.mapView.zoomIn(true)

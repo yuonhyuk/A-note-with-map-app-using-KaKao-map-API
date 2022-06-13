@@ -68,21 +68,22 @@
         android:id="@+id/modify"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="336dp"
+        android:layout_marginStart="296dp"
         android:src="@drawable/ic_baseline_create_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.228" />
 
     <ImageView
         android:id="@+id/delete"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="376dp"
+        android:layout_marginStart="336dp"
         android:src="@drawable/ic_baseline_delete_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.485" />
+        app:layout_constraintVertical_bias="0.228" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
