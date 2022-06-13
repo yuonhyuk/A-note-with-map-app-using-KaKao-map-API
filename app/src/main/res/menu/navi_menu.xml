@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/map"
+            android:icon="@drawable/ic_baseline_map_24"
+            android:title="Map"/>
+        <item android:id="@+id/note"
+            android:icon="@drawable/ic_baseline_event_note_24"
+            android:title="Note List"/>
+    </group>
+</menu>

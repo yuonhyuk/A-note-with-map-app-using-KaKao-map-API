@@ -3,15 +3,18 @@ package com.example.mapnote
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import com.example.mapnote.Room.MarkerDataBase
 import com.example.mapnote.Room.MarkerInfo
 import com.example.mapnote.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +25,7 @@ import net.daum.mf.map.api.MapView
 
 @SuppressLint("StaticFieldLeak")
 class MainActivity : AppCompatActivity(), MapView.POIItemEventListener,
-MapView.MapViewEventListener {
+MapView.MapViewEventListener,NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
     lateinit var db : MarkerDataBase
     var markerList = listOf<MarkerInfo>()
@@ -72,6 +75,10 @@ MapView.MapViewEventListener {
         binding.zoomin.setOnClickListener(){
             binding.mapView.zoomOut(true)
         }
+        binding.btnNavi.setOnClickListener(){
+            binding.layoutDrawer.openDrawer(GravityCompat.START)
+        }
+        binding.naviView.setNavigationItemSelectedListener(this)
     }
 
     //말풍선 레이아웃
@@ -201,7 +208,6 @@ MapView.MapViewEventListener {
                             insertData(markerInfo)
                             getAllData()
                         }
-                        Toast.makeText(this, "$markerList", Toast.LENGTH_SHORT).show()
                     }
                     dlg.setNegativeButton("취소", null)
                     dlg.show()
@@ -250,5 +256,23 @@ MapView.MapViewEventListener {
     }
 
     override fun onMapViewMoveFinished(p0: MapView?, p1: MapPoint?) {
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.map -> Toast.makeText(applicationContext,"지도",Toast.LENGTH_SHORT).show()
+            R.id.note -> Toast.makeText(applicationContext,"리스트",Toast.LENGTH_SHORT).show()
+        }
+        binding.layoutDrawer.closeDrawers()
+        return false
+    }
+
+    override fun onBackPressed() {
+        if(binding.layoutDrawer.isDrawerOpen(GravityCompat.START)){
+            binding.layoutDrawer.closeDrawers()
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 }
