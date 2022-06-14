@@ -37,6 +37,9 @@ class NoteActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             binding.layoutDrawer.openDrawer(GravityCompat.START)
         }
         binding.naviView.setNavigationItemSelectedListener(this)
+        binding.deleteAll.setOnClickListener(){
+            deleteAllData()
+        }
     }
 
 
